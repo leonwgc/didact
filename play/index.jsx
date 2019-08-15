@@ -1,5 +1,9 @@
 import {render, createElement} from '../src/didact';
+import Clock from './Clock';
 
-console.log('hi');
-
-render(<div>hello</div>, document.getElementById('root'));
+render(
+	<div>
+		<Clock />
+	</div>,
+	document.getElementById('root')
+);

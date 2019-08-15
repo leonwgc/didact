@@ -6,6 +6,7 @@
 				"pragma": "createElement", // default pragma is React.createElement
 				"throwIfNamespace": false // defaults to true
 			}
-		]
+		],
+		["@babel/plugin-proposal-class-properties"]
 	]
 }

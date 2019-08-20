@@ -88,15 +88,42 @@ function diffDom(instance, element) {
 	const {props} = element;
 	const oldElement = instance.element;
 	const oldProps = oldElement.props;
+	const dom = instance.dom;
 	const oldPropsKeys = Object.keys(oldProps);
-	var dom = instance.dom;
-	for (let ok of oldPropsKeys) {
-		dom[ok] = null;
-	}
 	const newPropsKeys = Object.keys(props);
-	for (let nk of newPropsKeys) {
-		dom[nk] = props[nk];
+	// deleted props
+	const deleted = oldPropsKeys.filter(k => newPropsKeys.indexOf(k) === -1);
+	// changed props
+	const added = newPropsKeys.filter(k => oldPropsKeys.indexOf(k) === -1);
+	const changed = newPropsKeys.filter(k => props[k] !== oldProps[k]);
+	const needSet = added.concat(changed);
+
+	const needDeleteEventPropsKeys = deleted.filter(p => p.startsWith('on'));
+	const needDeleteNoneEventPropsKeys = deleted.filter(p => !p.startsWith('on'));
+	const needSetEventPropsKeys = needSet.filter(p => p.startsWith('on'));
+	const needSetNoneEventPropsKeys = needSet.filter(p => !p.startsWith('on'));
+
+	for (let k of needDeleteNoneEventPropsKeys) {
+		delete dom[k];
 	}
+	for (let k of needDeleteEventPropsKeys) {
+		dom.removeEventListener(k.toLowerCase().slice(2), oldProps[k]);
+	}
+	for (let k of needSetNoneEventPropsKeys) {
+		if (k === 'style') {
+			var v = props[k];
+			for (let s of Object.keys(v)) {
+				dom.style[s] = v[s];
+			}
+		} else {
+			dom[k] = props[k];
+		}
+	}
+
+	for (let k of needSetEventPropsKeys) {
+		dom.addEventListener(k.toLowerCase().slice(2), props[k]);
+	}
+
 	instance.childInstances = diffChildren(instance, element);
 	instance.element = element;
 	return instance;

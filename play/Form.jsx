@@ -8,10 +8,11 @@ export default class Form extends Component {
 	};
 
 	render() {
+		const {val} = this.state;
 		return (
-			<div>
-				<input type="text" value={this.state.val} onInput={this.onChange} />
-				<div>{this.state.val}</div>
+			<div className="test">
+				<input type="text" value={val} onInput={this.onChange} />
+				<div style={{color: val === 'wgc' ? '#000' : 'red'}}>{this.state.val}</div>
 			</div>
 		);
 	}

@@ -1,5 +1,5 @@
-export default function render(el, dom) {
-	return reconcile(dom, null, el);
+export default function render(element, parentDom) {
+	return reconcile(parentDom, null, element);
 }
 
 function inst(element) {

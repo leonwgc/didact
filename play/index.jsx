@@ -5,8 +5,6 @@ import Box from './Box';
 
 render(
 	<div className="wgc">
-		hello <input type="text" />
-		<div style={{border: '1px solid #ccc'}}>world</div>
 		<Clock />
 		<Box />
 	</div>,

@@ -6,7 +6,7 @@ export default class Box extends Component {
 	render() {
 		return (
 			<Form>
-				<div>
+				<div style={{border: '1px solid #ccc'}}>
 					<div>form inner1</div>
 					<div>form inner2</div>
 				</div>

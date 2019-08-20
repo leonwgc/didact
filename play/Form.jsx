@@ -13,7 +13,9 @@ export default class Form extends Component {
 			<div className="test">
 				<input type="text" value={val} onInput={this.onChange} />
 				<div style={{color: val === 'wgc' ? 'green' : 'red'}}>{this.state.val}</div>
-				<div className="under-form-children">{this.props.children}</div>
+				<div className="under-form-children" style={{color: val === 'wgc' ? 'red' : 'blue'}}>
+					{this.props.children}
+				</div>
 			</div>
 		);
 	}

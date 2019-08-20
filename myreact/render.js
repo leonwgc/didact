@@ -27,7 +27,7 @@ function inst(element) {
 				}
 			}
 			for (let p of eventPropsKeys) {
-				dom[p.toLowerCase()] = props[p];
+				dom.addEventListener(p.toLowerCase().slice(2), props[p]);
 			}
 			var childInstances = children.map(inst);
 			var childDoms = childInstances.map(i => i.dom);
@@ -62,6 +62,7 @@ export function reconcile(parentDom, instance, element) {
 		if (element.type === 'TEXT') {
 			if (instance.element.props.nodeValue !== element.props.nodeValue) {
 				instance.dom.nodeValue = element.props.nodeValue;
+				instance.element = element;
 			}
 			return instance;
 		}
@@ -84,7 +85,7 @@ function diffComponent(instance, element, parentDom) {
 }
 
 function diffDom(instance, element) {
-	const {props, children} = element;
+	const {props} = element;
 	const oldElement = instance.element;
 	const oldProps = oldElement.props;
 	const oldPropsKeys = Object.keys(oldProps);

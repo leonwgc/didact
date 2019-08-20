@@ -4,9 +4,6 @@ export default function render(element, parentDom) {
 }
 
 function createInstance(element) {
-	// if (Array.isArray(element)) {
-	// 	return element.map(createInstance);
-	// }
 	const {type, props} = element;
 	const children = props.children;
 	let instance = null;

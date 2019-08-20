@@ -1,9 +1,14 @@
+const reserverdProps = ['children', 'key', 'ref'];
 export default function render(element, parentDom) {
 	return reconcile(parentDom, null, element);
 }
 
-function inst(element) {
-	const {type, props, children} = element;
+function createInstance(element) {
+	// if (Array.isArray(element)) {
+	// 	return element.map(createInstance);
+	// }
+	const {type, props} = element;
+	const children = props.children;
 	let instance = null;
 	var dom = null;
 	if (typeof type === 'string') {
@@ -12,7 +17,7 @@ function inst(element) {
 			instance = {element, dom, childInstances: null};
 		} else {
 			dom = document.createElement(type);
-			var propsKeys = Object.keys(props);
+			var propsKeys = Object.keys(props).filter(k => reserverdProps.indexOf(k) == -1);
 			var eventPropsKeys = propsKeys.filter(p => p.startsWith('on'));
 			var noneEventPropsKeys = propsKeys.filter(p => !p.startsWith('on'));
 
@@ -23,13 +28,15 @@ function inst(element) {
 						dom.style[s] = v[s];
 					}
 				} else {
-					dom[p] = props[p];
+					if (reserverdProps.indexOf(p) === -1) {
+						dom[p] = props[p];
+					}
 				}
 			}
 			for (let p of eventPropsKeys) {
 				dom.addEventListener(p.toLowerCase().slice(2), props[p]);
 			}
-			var childInstances = children.map(inst);
+			var childInstances = children.map(createInstance);
 			var childDoms = childInstances.map(i => i.dom);
 			childDoms.map(d => dom.appendChild(d));
 			instance = {element, dom, childInstances};
@@ -38,7 +45,7 @@ function inst(element) {
 		instance = {};
 		var publicInstance = new element.type(props);
 		var childElement = publicInstance.render();
-		var childInstance = inst(childElement);
+		var childInstance = createInstance(childElement);
 		instance = {publicInstance, dom: childInstance.dom, element, childInstance};
 		publicInstance.instance = instance;
 	}
@@ -47,14 +54,14 @@ function inst(element) {
 
 export function reconcile(parentDom, instance, element) {
 	if (!instance) {
-		instance = inst(element, parentDom);
+		instance = createInstance(element, parentDom);
 		parentDom.appendChild(instance.dom);
 		return instance;
 	} else if (!element) {
 		parentDom.removeChild(instance.dom);
 		return null;
 	} else if (instance.element.type !== element.type) {
-		var newInstance = inst(element, parentDom);
+		var newInstance = createInstance(element, parentDom);
 		parentDom.replaceChild(newInstance.dom, instance.dom);
 		return newInstance;
 	} else if (typeof element.type === 'string') {
@@ -89,8 +96,8 @@ function diffDom(instance, element) {
 	const oldElement = instance.element;
 	const oldProps = oldElement.props;
 	const dom = instance.dom;
-	const oldPropsKeys = Object.keys(oldProps);
-	const newPropsKeys = Object.keys(props);
+	const oldPropsKeys = Object.keys(oldProps).filter(k => reserverdProps.indexOf(k) == -1);
+	const newPropsKeys = Object.keys(props).filter(k => reserverdProps.indexOf(k) == -1);
 	// deleted props
 	const deleted = oldPropsKeys.filter(k => newPropsKeys.indexOf(k) === -1);
 	// changed props
@@ -116,7 +123,9 @@ function diffDom(instance, element) {
 				dom.style[s] = v[s];
 			}
 		} else {
-			dom[k] = props[k];
+			if (reserverdProps.indexOf(k) === -1) {
+				dom[k] = props[k];
+			}
 		}
 	}
 
@@ -132,7 +141,7 @@ function diffDom(instance, element) {
 function diffChildren(instance, element) {
 	const dom = instance.dom;
 	const childInstances = instance.childInstances;
-	const nextChildElements = element.children || [];
+	const nextChildElements = element.props.children || [];
 	const newChildInstances = [];
 	const count = Math.max(childInstances.length, nextChildElements.length);
 	for (let i = 0; i < count; i++) {

@@ -1,4 +1,5 @@
-import {createElement, Component} from '../src/didact';
+import Component from '../myreact/component';
+import createElement from '../myreact/h';
 
 export default class Clock extends Component {
 	constructor(props) {

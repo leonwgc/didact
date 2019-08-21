@@ -4,8 +4,9 @@ const queue = [];
 export default function queueUpdate(c) {
 	if (!c.__dirty) {
 		c.__dirty = true;
-		queue.push(c);
-		nextTick(process);
+		if (queue.push(c) === 1) {
+			nextTick(process);
+		}
 	}
 }
 
